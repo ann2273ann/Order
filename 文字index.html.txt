@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阿郎早點｜點餐系統</title>
+<style>
+body {
+    font-family: Arial;
+    background: #f8f5f0;
+    margin: 0;
+    padding: 10px;
+}
+h1 {
+    text-align: center;
+}
+.menu {
+    background: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+button {
+    padding: 8px;
+    margin-top: 5px;
+    width: 100%;
+}
+.cart {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #fff;
+    padding: 10px;
+    border-top: 2px solid #ccc;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🥪 阿郎早點</h1>
+
+<div class="menu">
+    <h3>蛋餅 35元</h3>
+    <button onclick="addItem('蛋餅',35)">加入</button>
+</div>
+
+<div class="menu">
+    <h3>燒餅夾蛋 45元</h3>
+    <button onclick="addItem('燒餅夾蛋',45)">加入</button>
+</div>
+
+<div class="menu">
+    <h3>冰豆漿 20元</h3>
+    <button onclick="addItem('冰豆漿',20)">加入</button>
+</div>
+
+<div class="cart">
+    <h3>🧾 訂單</h3>
+    <div id="order"></div>
+    <h3 id="total">總金額：0</h3>
+    <button onclick="submitOrder()">送出訂單</button>
+</div>
+
+<script>
+let order = [];
+let total = 0;
+
+function addItem(name, price){
+    order.push(name);
+    total += price;
+    render();
+}
+
+function render(){
+    document.getElementById("order").innerHTML = order.join("<br>");
+    document.getElementById("total").innerText = "總金額：" + total;
+}
+
+function submitOrder(){
+    alert("訂單已送出！\n" + order.join(", "));
+    order = [];
+    total = 0;
+    render();
+}
+</script>
+
+</body>
+</html>
