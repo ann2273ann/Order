@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阿郎早點</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: "Noto Sans TC";
+  background: #f4f1ea;
+  margin:0;
+}
+
+/* 頭部 */
+.header {
+  background:#1f3a5f;
+  color:white;
+  text-align:center;
+  padding:15px;
+  font-size:22px;
+  letter-spacing:2px;
+}
+
+/* 區塊 */
+.section {
+  background:white;
+  margin:10px;
+  padding:12px;
+  border-radius:12px;
+}
+
+/* 菜單卡片 */
+.item {
+  border-bottom:1px solid #eee;
+  padding:10px 0;
+}
+
+.item:last-child {
+  border:none;
+}
+
+.price {
+  float:right;
+  color:#1f3a5f;
+}
+
+/* 按鈕 */
+button {
+  background:#1f3a5f;
+  color:white;
+  border:none;
+  padding:8px;
+  margin-top:5px;
+  width:100%;
+  border-radius:8px;
+}
+
+/* 購物車 */
+.cart {
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:white;
+  padding:10px;
+  border-top:2px solid #ccc;
+}
+
+.total {
+  font-size:18px;
+  font-weight:bold;
+}
+
+/* 套餐 */
+.combo {
+  background:#fff8e1;
+  border:1px dashed #f0c040;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">阿郎早點</div>
+
+<!-- 用餐方式 -->
+<div class="section">
+<h3>🍽 用餐方式</h3>
+<select id="type">
+<option>內用</option>
+<option>外帶</option>
+</select>
+</div>
+
+<!-- 套餐（提高客單價🔥） -->
+<div class="section combo">
+<h3>🔥 推薦套餐</h3>
+<div class="item">
+蛋餅＋豆漿 <span class="price">50</span>
+<button onclick="addCombo()">加入套餐</button>
+</div>
+</div>
+
+<!-- 主餐 -->
+<div class="section">
+<h3>🥪 主餐</h3>
+
+<div class="item">
+蛋餅 <span class="price">35</span>
+<select id="extra">
+<option value="0">原味</option>
+<option value="10">加蛋 +10</option>
+<option value="15">起司 +15</option>
+</select>
+<button onclick="add('蛋餅',35)">加入</button>
+</div>
+
+<div class="item">
+燒餅夾蛋 <span class="price">45</span>
+<button onclick="add('燒餅夾蛋',45)">加入</button>
+</div>
+
+</div>
+
+<!-- 飲料 -->
+<div class="section">
+<h3>🥤 飲料</h3>
+
+<div class="item">
+豆漿 <span class="price">20</span>
+<select id="temp">
+<option>冰</option>
+<option>熱</option>
+</select>
+<select id="sugar">
+<option>無糖</option>
+<option>半糖</option>
+<option>全糖</option>
+</select>
+<button onclick="addDrink()">加入</button>
+</div>
+
+</div>
+
+<!-- 購物車 -->
+<div class="cart">
+<div id="cart"></div>
+<div class="total" id="total">總金額：0</div>
+<button onclick="submit()">送出訂單</button>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "你的KEY",
+  authDomain: "你的",
+  projectId: "你的",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let cart = [];
+let total = 0;
+
+function add(name, price){
+  let extra = document.getElementById("extra");
+  let text = extra.options[extra.selectedIndex].text;
+  let val = parseInt(extra.value);
+
+  cart.push(name + " " + text);
+  total += price + val;
+  render();
+}
+
+function addDrink(){
+  let temp = document.getElementById("temp").value;
+  let sugar = document.getElementById("sugar").value;
+  cart.push(`豆漿 (${temp}/${sugar})`);
+  total += 20;
+  render();
+}
+
+function addCombo(){
+  cart.push("套餐：蛋餅＋豆漿");
+  total += 50;
+  render();
+}
+
+function render(){
+  document.getElementById("cart").innerHTML = cart.join("<br>");
+  document.getElementById("total").innerText = "總金額：" + total;
+}
+
+function submit(){
+  let type = document.getElementById("type").value;
+
+  db.collection("orders").add({
+    items: cart,
+    total: total,
+    type: type,
+    status: "pending",
+    time: new Date()
+  });
+
+  alert("訂單已送出！");
+  cart = [];
+  total = 0;
+  render();
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+</body>
+</html>
